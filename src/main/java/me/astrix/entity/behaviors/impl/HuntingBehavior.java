@@ -1,6 +1,7 @@
-package me.astrix.entity.behaviors;
+package me.astrix.entity.behaviors.impl;
 
 import lombok.Getter;
+import me.astrix.entity.behaviors.AIBehavior;
 import me.astrix.entity.navigation.AdvancedNavigator;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;

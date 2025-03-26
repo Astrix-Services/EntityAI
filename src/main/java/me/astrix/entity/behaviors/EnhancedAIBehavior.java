@@ -12,7 +12,10 @@ import java.util.Random;
 @Setter
 public abstract class EnhancedAIBehavior extends AIBehavior {
 
+    /** Random instance for behavior calculations */
     protected final Random random = new Random();
+
+    /** The emotional state of the entity, default is NEUTRAL */
     protected EntityEmotionalState emotionalState = EntityEmotionalState.NEUTRAL;
 
     /** The home or starting location of the entity */

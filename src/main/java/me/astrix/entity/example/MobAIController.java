@@ -1,8 +1,8 @@
 package me.astrix.entity.example;
 
 import me.astrix.entity.EntityAI;
-import me.astrix.entity.behaviors.HuntingBehavior;
-import me.astrix.entity.behaviors.TerritorialBehavior;
+import me.astrix.entity.behaviors.impl.HuntingBehavior;
+import me.astrix.entity.behaviors.impl.TerritorialBehavior;
 import me.astrix.entity.managers.AIManager;
 import org.bukkit.Location;
 import org.bukkit.World;

@@ -7,6 +7,10 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Mob;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 @Getter
 public class AdvancedNavigator {
 
@@ -89,29 +93,58 @@ public class AdvancedNavigator {
     }
 
     /**
-     * Attempts to navigate around an obstacle by trying alternative paths.
+     * Attempts to navigate around an obstacle by exploring alternative movement paths.
      *
-     * @param originalDirection Initial movement direction
+     * This method helps an entity avoid getting stuck when its original movement path
+     * is blocked. It systematically checks orthogonal and diagonal directions to find
+     * a valid alternative route, applying a slight speed reduction to simulate cautious movement.
+     *
+     * @param originalDirection The initial movement vector attempting to be traversed
+     * @throws IllegalStateException if no valid movement can be found after checking all potential paths
+     * @see Vector
+     * @see Location
      */
     private void navigateAroundObstacle(Vector originalDirection) {
-        // Try diagonal movements
-        double[][] offsets = {
-                {1, 0}, {-1, 0}, {0, 1}, {0, -1},
-                {1, 1}, {-1, -1}, {1, -1}, {-1, 1}
-        };
+        // Define potential movement offsets covering all primary and diagonal directions
+        List<Vector> potentialMoves = List.of(
+                new Vector(1, 0, 0),   // Right
+                new Vector(-1, 0, 0),  // Left
+                new Vector(0, 0, 1),   // Forward
+                new Vector(0, 0, -1),  // Backward
+                new Vector(1, 0, 1),   // Diagonal right-forward
+                new Vector(-1, 0, -1), // Diagonal left-backward
+                new Vector(1, 0, -1),  // Diagonal right-backward
+                new Vector(-1, 0, 1)   // Diagonal left-forward
+        );
 
-        for (double[] offset : offsets) {
-            Vector alternateDirection = originalDirection.clone()
-                    .add(new Vector(offset[0], 0, offset[1]).normalize());
+        // Find a valid move using streams and Optional for efficient path exploration
+        Optional<Vector> safeMove = potentialMoves.stream()
+                .map(offset -> {
+                    // Create an alternate direction by combining original and offset vectors
+                    Vector alternateDirection = originalDirection.clone()
+                            .add(offset.normalize());
 
-            Location alternateStep = entity.getLocation().clone()
-                    .add(alternateDirection.multiply(speed));
+                    // Calculate the potential new location after applying the alternate direction
+                    Location alternateStep = entity.getLocation().clone()
+                            .add(alternateDirection.multiply(speed));
 
-            if (isValidMove(alternateStep)) {
-                entity.setVelocity(alternateDirection.multiply(speed * 0.8));
-                return;
-            }
-        }
+                    // Return the alternate direction if the move is valid, otherwise null
+                    return isValidMove(alternateStep) ? alternateDirection : null;
+                })
+                .filter(Objects::nonNull)
+                .findFirst();
+
+        // Apply the movement if a safe alternative is found, otherwise potentially throw an exception
+        safeMove.ifPresentOrElse(
+                move -> {
+                    // Reduce speed to 80% to simulate cautious navigation around obstacles
+                    entity.setVelocity(move.multiply(speed * 0.8));
+                },
+                () -> {
+                    // Optional: Log or handle the case where no valid move is found
+                    throw new IllegalStateException("No valid movement path found around obstacle");
+                }
+        );
     }
 
     /**

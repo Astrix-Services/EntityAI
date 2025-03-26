@@ -1,5 +1,6 @@
-package me.astrix.entity.behaviors;
+package me.astrix.entity.behaviors.impl;
 
+import me.astrix.entity.behaviors.EnhancedAIBehavior;
 import me.astrix.entity.enums.EntityEmotionalState;
 import me.astrix.entity.navigation.AdvancedNavigator;
 import me.astrix.entity.utils.EntityUtils;
