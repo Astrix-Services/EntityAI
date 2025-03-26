@@ -46,7 +46,7 @@ public class ScaredBehavior extends AIBehavior {
                         .map(e -> (LivingEntity) e)
                         .collect(Collectors.toList()),
                 fearRadius
-        );
+        ).orElse(null);
 
         if (nearestThreat != null) {
             // Run away from the threat
